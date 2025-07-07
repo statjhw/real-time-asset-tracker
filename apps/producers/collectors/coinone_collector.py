@@ -19,7 +19,23 @@ class CoinoneCollector(BaseCollector):
         except Exception as e:
             print(e)
             return None
-        
+    def fetch_all(self) -> dict:
+        try:
+            tickers = {}    
+            data = self.collect()
+            for item in data["tickers"]:
+                tickers[item["target_currency"]] = {
+                    "symbol": item["target_currency"],
+                    "price": item["last"],
+                    "quote_currency": item["quote_currency"],
+                    "high": item["high"],
+                    "low": item["low"],
+                    "timestamp": item["timestamp"]
+                }
+            return tickers
+        except Exception as e:
+            print(e)
+            return None
 if __name__ == "__main__":
     collector = CoinoneCollector()
-    print(collector.collect())
+    collector.pretty_print(collector.fetch_all())

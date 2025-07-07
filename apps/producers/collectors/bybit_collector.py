@@ -19,7 +19,32 @@ class BybitCollector(BaseCollector):
         except Exception as e:
             print(e)
             return None
+    def fetch_all(self) -> dict:
+        try:
+            ticker = {}
+            data = self.collect()
+            timestamp = data["time"]
+            for item in data["result"]["list"]:
+                ticker[item["symbol"]] = {
+                    "symbol": item["symbol"],
+                    "price": item["lastPrice"],
+                    "bid1Price": item["bid1Price"],
+                    "bid1Size": item["bid1Size"],
+                    "ask1Price": item["ask1Price"],
+                    "ask1Size": item["ask1Size"],
+                    "prevPrice24h": item["prevPrice24h"],
+                    "price24hPcnt": item["price24hPcnt"],
+                    "highPrice24h": item["highPrice24h"],
+                    "lowPrice24h": item["lowPrice24h"],
+                    "turnover24h": item["turnover24h"],
+                    "volume24h": item["volume24h"],
+                    "timestamp": timestamp
+                }
+            return ticker
+        except Exception as e:
+            print(e)
+            return None
 
 if __name__ == "__main__":
     collector = BybitCollector()
-    print(collector.collect())
+    collector.pretty_print(collector.fetch_all())
