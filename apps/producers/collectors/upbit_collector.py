@@ -1,4 +1,4 @@
-from base_collector import BaseCollector
+from .base_collector import BaseCollector
 import requests
 import json
 
@@ -24,19 +24,28 @@ class UpbitCollector(BaseCollector):
     def collect(self) -> dict:
         try:
             tickers = self.tickers()
-            self.market_url = self.market_url + ",".join(tickers)
-            response = requests.get(self.market_url)
+            if not tickers:
+                raise Exception("티커 목록을 가져올 수 없습니다")
+            
+            # 주요 마켓만 선택 (URL 길이 제한을 위해)
+            major_tickers = [ticker for ticker in tickers if ticker.startswith('KRW-')][:50]  # 상위 50개만
+            
+            url = self.market_url + ",".join(major_tickers)
+            response = requests.get(url, timeout=10)
             if response.status_code == 200:
                 return json.loads(response.text)
             else:
-                raise Exception(f"API 호출 실패: {response.status_code}")
+                raise Exception(f"API 호출 실패: {response.status_code} - {response.text}")
         except Exception as e:
-            print(e)
+            print(f"Upbit API 오류: {e}")
             return None
     def fetch_all(self) -> dict:
         try: 
             tickers = {}
             data = self.collect()
+            if data is None:
+                return None
+                
             for item in data:
                 tickers[item["market"]] = {
                     'symbol': item["market"],
@@ -52,7 +61,7 @@ class UpbitCollector(BaseCollector):
                 }
             return tickers
         except Exception as e:
-            print(e)
+            print(f"Upbit 데이터 처리 오류: {e}")
             return None
 if __name__ == "__main__":
     collector = UpbitCollector()

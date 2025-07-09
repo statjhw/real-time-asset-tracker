@@ -3,13 +3,18 @@ import yaml
 import threading
 from kafka import KafkaProducer
 import json
+import sys
+import os
+
+# 프로젝트 루트 경로를 Python 경로에 추가
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 
 from collectors.binance_collector import BinanceCollector
 from collectors.bithumb_collector import BithumbCollector
 from collectors.bybit_collector import BybitCollector
 from collectors.upbit_collector import UpbitCollector
 from collectors.coinone_collector import CoinoneCollector
-from utils.logger import setup_default_logger
+from apps.utils.logger import setup_default_logger
 
 COLLECTORS_MAP = {
     "BinanceCollector": BinanceCollector,
@@ -38,14 +43,20 @@ def run_collector_work(exchange_name, global_config, shutdown_event):
     while not shutdown_event.is_set():
         try:
             data = collector.fetch_all()
+            if data is None:
+                logger.warning(f"{exchange_name}: 데이터 수집 실패, 다음 폴링까지 대기")
+                time.sleep(ex_config["poll_interval_seconds"])
+                continue
+                
             for symbol, item in data.items():
                 if not ex_config["enabled"]:
                     continue
-                key = symbol 
+                key = symbol.encode('utf-8')  # bytes로 변환
                 value = item
                 producer.send(topic, key=key, value=value)
                 logger.debug(f"데이터 전송: {symbol}")
             producer.flush()
+            logger.info(f"{exchange_name}: {len(data)}개 심볼 데이터 전송 완료")
         except Exception as e:
             logger.exception(f"수집기 오류: {e}")
         

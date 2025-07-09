@@ -1,4 +1,4 @@
-from base_collector import BaseCollector
+from .base_collector import BaseCollector
 import requests
 import json
 
@@ -12,19 +12,22 @@ class BithumbCollector(BaseCollector):
 
     def collect(self) -> dict:
         try:
-            response = requests.get(self.url)
+            response = requests.get(self.url, timeout=10)
             if response.status_code == 200:
                 return json.loads(response.text)
             else:
-                raise Exception(f"API 호출 실패: {response.status_code}")
+                raise Exception(f"API 호출 실패: {response.status_code} - {response.text}")
         except Exception as e:
-            print(e)
+            print(f"Bithumb API 오류: {e}")
             return None
     
     def fetch_all(self) -> dict:
         try: 
             tickers = {}
             data = self.collect()
+            if data is None:
+                return None
+                
             timestamp = data["data"]["date"]
             for ticker, items in data["data"].items():
                 if ticker == "date":
@@ -47,7 +50,7 @@ class BithumbCollector(BaseCollector):
             return tickers
 
         except Exception as e:
-            print(e)
+            print(f"Bithumb 데이터 처리 오류: {e}")
             return None
         
 if __name__ == "__main__":
