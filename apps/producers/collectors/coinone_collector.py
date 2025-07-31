@@ -29,10 +29,8 @@ class CoinoneCollector(BaseCollector):
             for item in data["tickers"]:
                 tickers[item["target_currency"]] = {
                     "symbol": item["target_currency"],
+                    "exchange": "coinone",
                     "price": item["last"],
-                    "quote_currency": item["quote_currency"],
-                    "high": item["high"],
-                    "low": item["low"],
                     "timestamp": item["timestamp"]
                 }
             return tickers

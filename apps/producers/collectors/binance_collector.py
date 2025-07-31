@@ -32,6 +32,7 @@ class BinanceCollector(BaseCollector):
             data, timestamp = result
             for item in data:
                 tickers[item['symbol']] = {
+                    "exchange": "binance",
                     "symbol": item['symbol'],
                     "price": item['price'],
                     "timestamp": timestamp

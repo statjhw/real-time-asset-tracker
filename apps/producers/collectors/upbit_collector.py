@@ -48,15 +48,9 @@ class UpbitCollector(BaseCollector):
                 
             for item in data:
                 tickers[item["market"]] = {
+                    "exchange": "upbit",
                     'symbol': item["market"],
                     'price': item["trade_price"],
-                    'opening_price': item["opening_price"],
-                    'high_price': item["high_price"],
-                    'low_price': item["low_price"],
-                    'prev_closing_price': item["prev_closing_price"],
-                    'change': item["change"],
-                    'change_price': item["change_price"],
-                    'change_rate': item["change_rate"],
                     'timestamp': item["timestamp"]
                 }
             return tickers

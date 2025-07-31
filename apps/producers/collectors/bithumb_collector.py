@@ -33,18 +33,9 @@ class BithumbCollector(BaseCollector):
                 if ticker == "date":
                     continue
                 tickers[ticker] = {
+                    "exchange": "bithumb",
                     "symbol": ticker,
                     "price": items["closing_price"],
-                    "opening_price": items["opening_price"], 
-                    "min_price": items["min_price"],
-                    "max_price": items["max_price"],
-                    "units_traded": items["units_traded"],
-                    "acc_trade_value": items["acc_trade_value"],
-                    "prev_closing_price": items["prev_closing_price"],
-                    "units_traded_24H": items["units_traded_24H"],
-                    "acc_trade_value_24H": items["acc_trade_value_24H"],
-                    "fluctate_24H": items["fluctate_24H"],
-                    "fluctate_rate_24H": items["fluctate_rate_24H"],
                     "timestamp": timestamp
                 }
             return tickers
