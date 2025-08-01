@@ -5,7 +5,6 @@ from pyflink.datastream.functions import MapFunction, CoProcessFunction
 from pyflink.datastream.state import ValueStateDescriptor
 from pyflink.datastream.connectors.kafka import KafkaSource, KafkaSink, KafkaOffsetsInitializer, KafkaRecordSerializationSchema, DeliveryGuarantee
 from pyflink.common.watermark_strategy import WatermarkStrategy
-from pyflink.datastream.connectors.elasticsearch import Elasticsearch7SinkBuilder, ElasticsearchEmitter
 from dotenv import load_dotenv
 import json
 import os
@@ -58,8 +57,10 @@ class DeviationCalculator(MapFunction):
                 ema = self.alpha * current_price + (1 - self.alpha) * prev_ema
             
             self.ema_values[key] = ema
-
-            deviation = (current_price - ema) / ema
+            if ema != 0:
+                deviation = (current_price - ema) / ema
+            else:
+                deviation = 0.0
 
             value["ema_price"] = round(ema, 2)
             value["deviation_rate"] = round(deviation, 4)
