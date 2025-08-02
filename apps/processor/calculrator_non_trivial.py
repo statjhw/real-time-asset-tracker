@@ -167,7 +167,6 @@ def run_crypto_analysis_pipeline():
         output_type=Types.STRING()
     ).sink_to(kafka_sink).name("Volatility Kafka Sink")
 
-
     ### TODO: 프리미엄 연결 로직 & 연결
 
     # --- 프리미엄 계산 파이프라인 활성화 ---

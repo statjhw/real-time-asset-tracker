@@ -1,0 +1,50 @@
+apiVersion: 1
+
+# 기존 데이터소스 삭제 (재시작 시 중복 방지)
+deleteDatasources:
+  - name: InfluxDB-CryptoTracker
+    orgId: 1
+  - name: InfluxDB-SystemMetrics
+    orgId: 1
+
+# 새 데이터소스 추가
+datasources:
+  # 메인 암호화폐 데이터소스
+  - name: InfluxDB-CryptoTracker
+    type: influxdb
+    access: proxy
+    orgId: 1
+    url: http://host.docker.internal:8086
+    isDefault: true
+    editable: true
+    
+    # InfluxDB v2 설정
+    jsonData: 
+      version: Flux
+      organization: crypto-tracker
+      defaultBucket: crypto-metrics-new
+      tlsSkipVerify: true
+      httpMode: POST
+      
+    # 보안 정보 (환경변수 사용)
+    secureJsonData:
+      token: ${INFLUXDB_CRYPTO_TOKEN}
+
+  # 시스템 메트릭 데이터소스
+  - name: InfluxDB-SystemMetrics
+    type: influxdb
+    access: proxy
+    orgId: 1
+    url: http://host.docker.internal:8086
+    editable: true
+    
+    jsonData:
+      version: Flux
+      organization: crypto-tracker
+      defaultBucket: system-metrics
+      tlsSkipVerify: true
+      httpMode: POST
+      
+    # 환경변수 사용
+    secureJsonData:
+      token: ${INFLUXDB_SYSTEM_TOKEN} 
