@@ -22,7 +22,7 @@ datasources:
     jsonData: 
       version: Flux
       organization: crypto-tracker
-      defaultBucket: crypto-metrics-new
+      defaultBucket: crypto-metrics
       tlsSkipVerify: true
       httpMode: POST
       
