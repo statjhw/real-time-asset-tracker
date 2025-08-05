@@ -7,16 +7,6 @@
 
 </div>
 
-</div>
-
-
-<div align="center">
-    
-<img src="img/grafna대시보드.png" alt="Grafana 대시보드" width="800"/>
-<p><em>실시간 암호화폐 데이터 대시보드 - 가격, 변동률, 괴리율을 실시간으로 모니터링</em></p>
-
-</div>
-
 
 [![Python](https://img.shields.io/badge/Python-3.9+-blue.svg?style=flat&logo=python&logoColor=white)](https://python.org)
 [![Apache Kafka](https://img.shields.io/badge/Apache_Kafka-2.8+-orange.svg?style=flat&logo=apache-kafka&logoColor=white)](https://kafka.apache.org)
@@ -47,6 +37,15 @@
 ## 🎯 프로젝트 개요
 
 **Real-Time Crypto Asset Tracker**는 여러 암호화폐 거래소에서 실시간으로 데이터를 수집하고, 스트림 처리를 통해 가격 변동률과 거래소 간 괴리율을 계산하여 시각화하는 시스템입니다.
+
+</div>
+
+<div align="center">
+<img src="img/grafna대시보드.png" alt="Grafana 대시보드" width="800"/>
+<p><em>실시간 암호화폐 데이터 대시보드 - 가격, 변동률, 괴리율을 실시간으로 모니터링</em></p>
+</div>
+
+---
 
 
 ### 🎨 주요 특징
