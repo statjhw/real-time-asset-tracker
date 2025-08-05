@@ -41,7 +41,7 @@ class ChangeRateCalculator(MapFunction):
 class DeviationCalculator(MapFunction):
     def __init__(self, alpha: float = 0.1):
         self.alpha = alpha
-        self.ema_values = {}  # exchange_symbol별로 EMA 값 저장
+        self.ema_values = {}  # EMA 값들을 저장할 딕셔너리
 
     def map(self, value: dict):
         try:
@@ -100,7 +100,7 @@ class PremiumCalculator(CoProcessFunction):
         """환율 정보 가져오기"""
         return 1300.00
 
-    def _calculate_and_emit_premium(self, p_krw: float, p_usd: float, original_data: dict, out):
+    def _calculate_and_emit_premium(self, p_krw: float, p_usd: float, out):
         fx_rate = self._get_fx_rate()
         p_usd_in_krw = p_usd * fx_rate
         if p_usd_in_krw > 0: 
@@ -110,7 +110,7 @@ class PremiumCalculator(CoProcessFunction):
                 "symbol": "KRW-BTC-Premium", 
                 "premium": round(premium, 4),
                 # Grafana에서 인식할 @timestamp 필드 추가
-                "@timestamp": int(original_data.get("timestamp", time.time() * 1000))
+                "@timestamp": int(time.time() * 1000)
             })
 
 def run_crypto_analysis_pipeline():
@@ -121,7 +121,9 @@ def run_crypto_analysis_pipeline():
     env.add_jars(kafka_jar)
 
     # --- Kafka 소스 설정 ---
-    kafka_servers = os.getenv("KAFKA_BOOTSTRAP_SERVERS", "localhost:9092")
+    kafka_servers = os.getenv("KAFKA_BOOTSTRAP_SERVERS", "kafka:29092")  # Docker 환경 기본값 수정
+    print(f"Using Kafka servers: {kafka_servers}")
+    
     source = KafkaSource.builder() \
         .set_bootstrap_servers(kafka_servers) \
         .set_topics("crypto-ticker-binance", "crypto-ticker-bithumb", "crypto-ticker-bybit", "crypto-ticker-coinone", "crypto-ticker-upbit") \
@@ -145,7 +147,7 @@ def run_crypto_analysis_pipeline():
                     .map(ChangeRateCalculator()) \
                     .map(DeviationCalculator(alpha=0.1))
 
-    # --kafka 다시 전송--
+    # --- Kafka Sink 설정 (수정됨) ---
     kafka_sink = KafkaSink.builder() \
         .set_bootstrap_servers(kafka_servers) \
         .set_record_serializer(
@@ -168,19 +170,7 @@ def run_crypto_analysis_pipeline():
         output_type=Types.STRING()
     ).sink_to(kafka_sink).name("Volatility Kafka Sink")
 
-    ### TODO: 프리미엄 연결 로직 & 연결
-
-    # --- 프리미엄 계산 파이프라인 활성화 ---
-    #btc_stream = unified_stream.filter(lambda x: "BTC" in x.get("symbol", ""))
-    # upbit_stream = btc_stream.filter(lambda x: x["exchange"] == "upbit")  
-    # binance_stream = btc_stream.filter(lambda x: x["exchange"] == "binance")
-    # 
-    # if upbit_stream and binance_stream:
-    #     premium_stream = upbit_stream.connect(binance_stream) \
-    #                         .key_by(lambda item: "BTC", lambda item: "BTC") \
-    #                         .process(PremiumCalculator(None))
-    #     premium_stream.print().name("Premium Output")
-
+    print("Starting Flink job...")
     env.execute("Crypto Analysis Pipeline")
 
 if __name__ == "__main__":
