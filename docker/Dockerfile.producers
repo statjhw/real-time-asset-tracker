@@ -2,9 +2,10 @@ FROM python:3.9-slim
 
 WORKDIR /app
 
-# 시스템 의존성 설치
+# 시스템 의존성 설치 (netcat 추가)
 RUN apt-get update && apt-get install -y \
     gcc \
+    netcat-openbsd \
     && rm -rf /var/lib/apt/lists/*
 
 # Python 의존성 설치
@@ -25,5 +26,17 @@ WORKDIR /app/apps/producers
 ENV PYTHONPATH=/app
 ENV CONFIG_FILE=/app/configs/config-docker.yaml
 
-# producers 실행
-CMD ["python", "main.py"]
+# Kafka 대기 후 producers 실행 (토픽은 Kafka auto-create로 자동 생성됨)
+CMD ["bash", "-c", "\
+    echo '🚀 Crypto Producers 시작 중...' && \
+    echo '📡 Kafka 연결 대기 중...' && \
+    while ! nc -z kafka 29092; do \
+        echo '⏳ Kafka 대기 중...' && \
+        sleep 5; \
+    done && \
+    echo '✅ Kafka 연결 확인됨' && \
+    echo '⏳ Kafka 내부 초기화 대기 중...' && \
+    sleep 15 && \
+    echo '🎯 Crypto Producers 애플리케이션 시작 (토픽은 자동 생성됨)' && \
+    python main.py \
+"]
