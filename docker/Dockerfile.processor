@@ -1,0 +1,35 @@
+FROM flink:1.20.0-scala_2.12-java11
+
+# Python 설치
+USER root
+RUN apt-get update && apt-get install -y \
+    python3 \
+    python3-pip \
+    python3-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# 심링크 생성
+RUN ln -sf /usr/bin/python3 /usr/bin/python
+
+WORKDIR /app
+
+# Python 의존성 설치
+COPY requirements-processor.txt .
+RUN pip3 install --no-cache-dir -r requirements-processor.txt
+
+# 애플리케이션 코드 복사
+COPY apps/processor/ ./apps/processor/
+COPY jars/ ./jars/
+
+# 로그 디렉토리 생성
+RUN mkdir -p /app/logs
+
+# 환경변수 설정
+ENV PYTHONPATH=/app
+ENV FLINK_HOME=/opt/flink
+
+# flink 사용자로 다시 변경
+USER flink
+
+# processor 실행
+CMD ["python", "/app/apps/processor/calculrator_non_trivial.py"]

@@ -1,0 +1,33 @@
+kafka:
+  bootstrap_servers: "kafka:29092"
+
+exchanges:
+  binance:
+    enabled: true
+    collector_class: "BinanceCollector"
+    kafka_topic: "crypto-ticker-binance"
+    poll_interval_seconds: 5
+
+  bithumb:
+    enabled: true
+    collector_class: "BithumbCollector"
+    kafka_topic: "crypto-ticker-bithumb"
+    poll_interval_seconds: 5
+
+  bybit:
+    enabled: true
+    collector_class: "BybitCollector"
+    kafka_topic: "crypto-ticker-bybit"
+    poll_interval_seconds: 5
+  
+  upbit:
+    enabled: true
+    collector_class: "UpbitCollector"
+    kafka_topic: "crypto-ticker-upbit"
+    poll_interval_seconds: 5
+
+  coinone:
+    enabled: true
+    collector_class: "CoinoneCollector"
+    kafka_topic: "crypto-ticker-coinone"
+    poll_interval_seconds: 5

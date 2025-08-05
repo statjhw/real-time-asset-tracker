@@ -117,12 +117,13 @@ def run_crypto_analysis_pipeline():
     env = StreamExecutionEnvironment.get_execution_environment()
     env.set_parallelism(1)  # 단순화를 위해 병렬도 1로 설정
 
-    kafka_jar = "file:///Users/j.hwp/project/real-time-asset-tracker/jars/flink-sql-connector-kafka-3.3.0-1.20.jar"
+    kafka_jar = "file:///app/jars/flink-sql-connector-kafka-3.3.0-1.20.jar"
     env.add_jars(kafka_jar)
 
     # --- Kafka 소스 설정 ---
+    kafka_servers = os.getenv("KAFKA_BOOTSTRAP_SERVERS", "localhost:9092")
     source = KafkaSource.builder() \
-        .set_bootstrap_servers("localhost:9092") \
+        .set_bootstrap_servers(kafka_servers) \
         .set_topics("crypto-ticker-binance", "crypto-ticker-bithumb", "crypto-ticker-bybit", "crypto-ticker-coinone", "crypto-ticker-upbit") \
         .set_group_id("crypto-analysis-group") \
         .set_starting_offsets(KafkaOffsetsInitializer.latest()) \
@@ -146,7 +147,7 @@ def run_crypto_analysis_pipeline():
 
     # --kafka 다시 전송--
     kafka_sink = KafkaSink.builder() \
-        .set_bootstrap_servers("localhost:9092") \
+        .set_bootstrap_servers(kafka_servers) \
         .set_record_serializer(
             KafkaRecordSerializationSchema.builder()
                 .set_topic("crypto-ticker-volatility")

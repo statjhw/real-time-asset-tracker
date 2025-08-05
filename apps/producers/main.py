@@ -66,7 +66,8 @@ def run_collector_work(exchange_name, global_config, shutdown_event):
     logger.info(f"{exchange_name} 수집기 워커 종료")
 
 def main():
-    with open("configs/config.yaml", "r") as f:
+    config_file = os.getenv("CONFIG_FILE", "configs/config.yaml")
+    with open(config_file, "r") as f:
         config = yaml.safe_load(f)
     
     threads = []
