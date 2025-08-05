@@ -8,6 +8,9 @@ docker-compose up -d
 echo "⏳ 서비스 초기화 대기 중..."
 sleep 30
 
+echo "🏗️ Kafka 토픽 자동 생성 중..."
+./scripts/create-topics.sh
+
 echo "✅ 서비스 상태 확인:"
 docker-compose ps
 
@@ -24,7 +27,7 @@ echo ""
 echo "📊 로그 확인:"
 echo "  - 전체 로그: docker-compose logs -f"
 echo "  - 특정 서비스: docker-compose logs -f [서비스명]"
-echo "    예: docker-compose logs -f crypto-producers"
+echo "    예: docker-compose logs -f producers"
 echo ""
 echo "🔧 유용한 명령어:"
 echo "  - 서비스 중지: docker-compose down"
