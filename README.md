@@ -9,10 +9,14 @@
 
 </div>
 
+
 <div align="center">
+    
 <img src="img/grafna대시보드.png" alt="Grafana 대시보드" width="800"/>
 <p><em>실시간 암호화폐 데이터 대시보드 - 가격, 변동률, 괴리율을 실시간으로 모니터링</em></p>
+
 </div>
+
 
 [![Python](https://img.shields.io/badge/Python-3.9+-blue.svg?style=flat&logo=python&logoColor=white)](https://python.org)
 [![Apache Kafka](https://img.shields.io/badge/Apache_Kafka-2.8+-orange.svg?style=flat&logo=apache-kafka&logoColor=white)](https://kafka.apache.org)
